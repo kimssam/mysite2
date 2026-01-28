@@ -1,11 +1,78 @@
-<!doctype html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8" />
-	<title>Document</title>
-</head>
-<body>
-	<h1>질문 목록</h1>
-	Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium soluta ex dolorem facilis eos illum ipsam id quasi ea vel molestias debitis libero aliquam nisi sunt velit cupiditate. Perferendis nisi.
-</body>
+<html layout:decorate="~{layout}">
+
+<div class="container" layout:fragment="content">
+	<div class="row">
+		<div class="col">
+			<div class="jumbotron">
+				<h1>질문 목록</h1>
+			</div>
+			<a th:href="@{/question/create}" class="btn btn-info my-3">질문 등록하기</a>
+			<div class="input-group">
+				<input type="text" id="search_kw" class="form-control" th:value="${kw}" name="kw"/>
+				<button class="btn btn-outline-secondary" type="button" id="btn_search">검색</button>
+			</div>	
+			<form th:action="@{/question/list}" method="get" id="searchForm">
+				<input type="text" id="kw" th:value="${kw}" name="kw"/>
+				<input type="text" id="page" th:value="${paging.number}" name="page"/>
+			</form>
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th scope="col">번호</th>
+						<th scope="col">제목</th>
+						<th scope="col">글쓴이</th>
+						<th scope="col">작성일자</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="question, loop : ${paging}">
+						<td>[[${paging.getTotalElements - (paging.number * paging.size) - loop.index}]]</td>
+						<td>
+							<a th:href="@{|/question/detail/${question.id}|}" th:text="${question.subject}">db에 있는
+								제목</a><span class="text-danger badge  bg-warning" th:if="${#lists.size(question.answerList) > 0}" th:text="${#lists.size(question.answerList)}"></span>
+						</td>
+						<td>
+							<span >[[${question.author?.username}]]</span>
+						</td>
+						<td th:text="${#temporals.format(question.createDate, 'yyyy-MM-dd HH:mm')}"></td>
+					</tr>
+				</tbody>
+			</table>
+			<!--페이징 처리시작-->
+			<div class="row">
+				<div class="col d-flex w-100">
+					<nav aria-label="Page navigation example" th:if="${!paging.isEmpty()}" class="w-100">
+						<ul class="pagination justify-content-center">
+							<li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
+								<a class="page-link" th:data-page="${paging.number-1}" href="javascript:void(0)">이전</a>
+							</li>
+							<li class="page-item" th:each="page : ${#numbers.sequence(0, paging.totalPages-1)}" th:classappend="${paging.number == page} ? 'active'"
+							th:if="${page >= paging.number-2 and page <= paging.number+2}">
+								<a class="page-link" th:data-page="${page}" href="javascript:void(0)">[[${page}]]</a>
+							</li>
+							<li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+								<a class="page-link" th:data-page="${paging.number+1}" href="javascript:void(0)">다음</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script layout:fragment="script">
+		const page_elements = document.getElementsByClassName("page-link");
+			Array.from(page_elements).forEach(function (element) {
+				element.addEventListener("click", function () {
+					document.getElementById("page").value = this.dataset.page;
+					document.getElementById("searchForm").submit();
+				})
+			})
+
+		const btn_search = document.getElementById("btn_search");
+			btn_search.addEventListener("click", function () {
+				document.getElementById("kw").value = document.getElementById("search_kw").value;
+				document.getElementById("page").value = 0;
+				document.getElementById("searchForm").submit();
+			})
+	</script>
 </html>

@@ -1,15 +1,11 @@
 package com.example.simpleBoard;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.example.simpleBoard.answer.Answer;
 import com.example.simpleBoard.answer.AnswerRepository;
 import com.example.simpleBoard.question.Question;
 import com.example.simpleBoard.question.QuestionRepository;
@@ -25,7 +21,7 @@ class MysiteApplicationTests {
 	@Autowired
 	private AnswerRepository answerRepository;
 	
-	@Transactional
+	
 	@Test
 	void contextLoads() {
 		/*
@@ -82,15 +78,15 @@ class MysiteApplicationTests {
 		a1.setCreateDate(LocalDateTime.now());
 		a1.setQuestion(q);
 		this.answerRepository.save(a1);
-		
-		for(int i=1; i<=50; i++) {
+		*/
+		for(int i=1; i<=200; i++) {
 			Question q = new Question();
 			q.setSubject("테스트 코드를 이용해 생성한 제목: [제목"+i+"]");
 			q.setContent("테스트 코드를 이용해 생성한 내용: [내용"+i+"]");
 			q.setCreateDate(LocalDateTime.now());
 			this.questionRepository.save(q);
 		}
-		*/
+		/*
 		Optional<Question> oq= this.questionRepository.findById(3);
 		assertTrue(oq.isPresent());
 		Question q = oq.get();
@@ -98,6 +94,7 @@ class MysiteApplicationTests {
 		List<Answer> answerList = q.getAnswerList();
 		System.out.println(answerList.get(0).getContent());
 		System.out.println(answerList.size());
+		*/
 	}
 	
 
