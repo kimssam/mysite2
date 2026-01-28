@@ -1,9 +1,15 @@
 package com.example.simpleBoard.user;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.simpleBoard.DataNotFoundException;
 
@@ -14,12 +20,25 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder ;
+	private static final String UPLOAD_DIR = "src/main/resources/static/img/user/";
 	
-	public SiteUser create(String username, String email, String password) {
+	public SiteUser create(String username, String email, String password, MultipartFile imageFile) throws IOException {
 		SiteUser user = new SiteUser();
 		user.setUsername(username);
 		user.setEmail(email);
 		user.setPassword(passwordEncoder.encode(password));
+		if(!imageFile.isEmpty()) {
+			//고유한 이미지 이름 생성
+			String fileName = UUID.randomUUID().toString()+"_"+imageFile.getOriginalFilename();
+			//파일 저장 경로
+			Path filePath = Paths.get(UPLOAD_DIR, fileName);
+			//디렉토리가 없으면 생성
+			Files.createDirectories(filePath.getParent());
+			//파일 저장
+			Files.write(filePath,imageFile.getBytes());
+			//사용자 엔티티에 이미지 경로 설정
+			user.setImageUrl("/img/user/"+fileName);
+		}
 		this.userRepository.save(user);
 		return user;
 	}
