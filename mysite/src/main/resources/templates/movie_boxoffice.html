@@ -15,9 +15,7 @@
 				</tr>
 			</thead>
 			<tbody class="table-body">
-				<tr>
-					<td>ajax로 가져온 데이터 출력</td>
-				</tr>
+				
 			</tbody>
 		</table>	
 	</div>
@@ -36,10 +34,24 @@
 					dataType : "json",
 					success : function(data){
 						console.log("통신성공")
-						console.log("전체 데이터 : ", data)
+						console.log("전체 데이터 : data", data)
 						const list = data.boxOfficeResult.dailyBoxOfficeList
-						console.log("전체 데이터 : ", list)
+						console.log("전체 데이터 : list", list)
+						let str ="";
 						
+						$.each(list, function(i, item){
+							str += `
+								<tr>
+									<td>${item.rank}</td>
+									<td>${item.movieNm}</td>
+									<td><img src="/img/movies/${item.movieCd}.jpg" alt="" /></td>
+									<td>${item.openDt}</td>
+									<td>${Number(item.audiAcc).toLocaleString()}원</td>
+									<td>${Number(item.salesAcc).toLocaleString()}원</td>
+								</tr>
+							`
+						})
+						$(".table-body").append(str)
 					},
 					error : function(){
 						console.log("통신에러")
